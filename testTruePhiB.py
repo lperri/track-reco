@@ -3,7 +3,7 @@ import itertools
 import math
 from DataFormats.FWLite import Events, Handle
 from array import array
-
+import csv
 import numpy
 
 
@@ -149,15 +149,6 @@ def getPhi(stub):
         phi = float(offset + (num_chamber -1)*(delta_phi_chamber) + (num_half_strip*delta_phi_half_strip))
 	return math.radians(phi) - math.pi
 
-#def getBend(stub):
-#    #dict{idnumber:numberhalfstrips}
-#    dict = {2:-8,3:8,4:-6,5:6,6:-4,7:4,8:-2,9:2,10:0}
-#    offset, chambers, strips_per_chamber = ec_s_r_dict[s.first.endcap(), s.first.station(),s.first.ring()]
-#    delta_phi_chamber = float(360/chambers)
-#    half_strips_per_chamber = float(strips_per_chamber*2)
-#    delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
-#    pattern = s.second.getPattern()
-#    return float(dict[pattern]*math.radians(delta_phi_half_strip))
 
 def getBend(s):
     #dict{id number : number halfstrips from middle}
@@ -182,10 +173,28 @@ def calcPhiBendPrime(z1,z2,bend):
 events = Events(['file:/scratch2/Leah/CMSSW_10_1_7/src/cscHits.root'])
 
 N=0
-#make histograms: hist_242_232 represents a track that goes from ME_2_3_2 to ME_2_4_2 (inverse propogation) -- to fit a
-bend_242 = ROOT.TH2D("bend_242_vs_k","($\Phi_{b}$) vs. K; $\Kappa$; ($\Phi_{b}$)",100,-1,1,100,-1,1)
-bend_222 = ROOT.TH2D("bend_222_vs_k","($\Phi_{b}$) vs. K; $\Kappa$; ($\Phi_{b}$)",100,-1,1,100,-1,1)
+#histograms of true bend (from Michalis) vs calculated bend (by Leah)
+# 222 (segment s not q) because thats the outermost corresponding to phi_b not phi_b_prime
+#bendvsk_222_calc = ROOT.TH2D("bend_222_calc","$\Phi_{b}$ (calc) vs. k; k; $\Phi_{b}$ (calc)",100,-0.35,0.35,100,-1,1)
+#bendvsk_222_true = ROOT.TH2D("bend_222_true","$\Phi_{b}$ (true) vs. k; k; $\Phi_{b}$ (true)",100,-0.35,0.35,100,-1,1)
 
+muon_number = []
+patterns = []
+pt_vals = []
+curvature = []
+bend_calc_vals = []
+bend_true_vals = []
+
+muon_number.append('muon number:')
+for x in range(1,51):
+    muon_number.append(x)
+patterns.append('pattern:')
+pt_vals.append('pt:')
+curvature.append('k:')
+bend_calc_vals.append('bend Leah:')
+bend_true_vals.append('bend M:')
+
+ 
 for event in events:
     N=N+1
     #real muons
@@ -207,34 +216,43 @@ for event in events:
 			ec2, station2, ring2 = (s.first.endcap(),s.first.station(),s.first.ring())                
                 	ec1, station1, ring1 = (q.first.endcap(),q.first.station(),q.first.ring())
 			if ((station2,ring2),(station1,ring1)) in [((4,2),(3,2)),((4,2),(2,2)),((4,2),(1,3)),((4,2),(1,2)),((3,2),(2,2)),((3,2),(1,3)),((3,2),(1,2)),((2,2),(1,3)),((2,2),(1,2))]:
-			    z2 = detector_z_dict[(ec2, station2, ring2)]
-		    	    z1 = detector_z_dict[(ec1, station1, ring1)] 
+			    #z2 = detector_z_dict[(ec2, station2, ring2)]
+		    	    #z1 = detector_z_dict[(ec1, station1, ring1)] 
 			    k = float(g.charge()/g.pt())
 			    #bend is the bending angle at the outer detector that I calculate with my function getBend(s) 
-			    bend = getBend(s)
 			    #compare bend to the 'true bending angle'
-			    bend_true = s.truePhiB
-	            	    deltaphi = getPhi(q) - getPhi(s)
-		    	    c = abs(z1-z2)/abs(z1)
-#		    	    if ((ec2,station2,ring2),(ec1,station1,ring1)) == ((2,4,2),(2,3,2)):
-		    	    #if (ec2,station2,ring2) == (2,4,2):
-			#	bend_242.Fill(k,bend)
-#		    	    if ((ec2,station2,ring2),(ec1,station1,ring1)) == ((2,2,2),(2,1,3)):
-		    	    if (ec2,station2,ring2) == (2,2,2):
-				bend_222.Fill(k,bend)
-				#print "curvature,k",k
-				#print "phiBouter",bend
-				#print "delta phi",deltaphi
-				#print "phiOUTER",getPhi(s)
-				#print "phiInner",getPhi(q)
-				#print "c",c
+#			    bend_true = q.truePhiB
+	            	    #deltaphi = getPhi(q) - getPhi(s)
+		    	    #c = abs(z1-z2)/abs(z1)
+		    	    if ((ec2,station2,ring2),(ec1,station1,ring1)) == ((2,2,2),(2,1,3)):
+				bend = getPhi(s) - (math.pi/2) + getBend(s)
+			        #bendvsk_222_calc.Fill(k, bend)
+			        bend_true = getPhi(s) - (math.pi/2) + s.truePhiB
+			        #bendvsk_222_true.Fill(k, bend_true)
+			        pattern = s.second.getPattern()
+				pt = g.pt()
+				if len(pt_vals)<51:
+				    bend_calc_vals.append(bend)
+				    bend_true_vals.append(bend_true)
+				    patterns.append(pattern)
+				    pt_vals.append(g.pt())
+				    curvature.append(k)
+				    				    
+with open('testing_fix.txt','w') as file:
+    writer = csv.writer(file, delimiter='\t')
+    writer.writerows(zip(*[muon_number,pt_vals,patterns,curvature,bend_calc_vals,bend_true_vals]))
 
 
 
-f=ROOT.TFile("plots.root","RECREATE")
-f.cd()
-#bend_242.Write()
-bend_222.Write()
-f.Close()
+#file = open('testing_fix.txt','w')
+#for i in range(len(pt_vals)):
+#    file.write(('muon {}: pt={},k={},pattern={},bend(Leah)={},bend(M)={}').format(i,pt_vals[i],curvature[i],patterns[i],bend_calc_vals[i],bend_true_vals[i]))
+#file.close()
+
+#f=ROOT.TFile("plots.root","RECREATE")
+#f.cd()
+#bendvsk_222_calc.Write()
+#bendvsk_222_true.Write()
+#f.Close()
 
 
