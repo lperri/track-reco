@@ -116,31 +116,51 @@ ec_s_r_dict = {(1,1,3):[0,36,64],(1,1,2):[0,36,80],(1,2,2):[0,36,80],(1,3,2):[0,
 
 detector_z_dict = {(1,1,3):-7.0,(1,1,2):-7.0,(1,2,2):-8.3,(1,3,2):-9.3,(1,4,2):-10.3,(2,1,3):7.0,(2,1,2):7.0,(2,2,2):8.3,(2,3,2):9.3,(2,4,2):10.3}
 
+
 def getPhi(stub):
     '''takes in hit and returns global phi between -pi and pi radians'''
     if (stub.first.endcap(),stub.first.station(),stub.first.ring()) in ec_s_r_dict:
-	offset, chambers, strips_per_chamber = ec_s_r_dict[stub.first.endcap(), stub.first.station(),stub.first.ring()]
-	num_chamber = float(stub.first.chamber())
+        offset, chambers, strips_per_chamber = ec_s_r_dict[stub.first.endcap(), stub.first.station(),stub.first.ring()]
+        num_chamber = float(stub.first.chamber())
         num_half_strip = float(stub.second.getStrip())
-        delta_phi_chamber = float(360/chambers)
+        delta_phi_chamber = float((2*math.pi)/chambers)
         half_strips_per_chamber = strips_per_chamber*2
         delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
         phi = float(offset + (num_chamber -1)*(delta_phi_chamber) + (num_half_strip*delta_phi_half_strip))
-	return math.radians(phi) - math.pi
+        while phi<(-1*math.pi):
+            phi += 2*math.pi
+        while phi>math.pi:
+            phi -= 2*math.pi
+        return phi
 
-def getBend(s):
-	#dict{id number : number halfstrips from middle}
-	dict = {2:-4,3:4,4:-3,5:3,6:-2,7:2,8:-1,9:1,10:0}
-	offset, chambers, strips_per_chamber = ec_s_r_dict[s.first.endcap(), s.first.station(),s.first.ring()]
-	delta_phi_chamber = float(360/chambers)
-	half_strips_per_chamber = float(strips_per_chamber*2)
-	delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
-	pattern = s.second.getPattern()
-	#note this variable deltb_phi_bend is defined wrt the center of the detector
-	delta_phi_bend = float(dict[pattern]*math.radians(delta_phi_half_strip))
-	z = detector_z_dict[(s.first.endcap(),s.first.station(),s.first.ring())]
-	return math.atan((2*z/0.1) * math.tan(delta_phi_bend))
 
+def getPsi(s):
+    #dict{id number : number halfstrips from middle}
+    dict = {2:4,3:-4,4:3,5:-3,6:2,7:-2,8:1,9:-1,10:0}
+    offset, chambers, strips_per_chamber = ec_s_r_dict[s.first.endcap(), s.first.station(),s.first.ring()]
+    delta_phi_chamber = float(2*math.pi/chambers)
+    half_strips_per_chamber = float(strips_per_chamber*2)
+    delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
+    pattern = s.second.getPattern()
+    #note this variable delta_phi_psi is defined wrt the center of the detector
+    delta_phi_psi = float(dict[pattern]*(delta_phi_half_strip))
+    z = detector_z_dict[(s.first.endcap(),s.first.station(),s.first.ring())]
+    psi = math.atan((2*z/0.1) * math.tan(delta_phi_psi))
+    return psi
+
+def phiMiddleChamber(endcap,station,ring,chamber):
+#   ''' takes in (endcap,station,ring) as well as the chamber number and gets global phi value to the middle of that chamber '''
+    offset,chambers,strips_per_chamber = ec_s_r_dict[endcap,station,ring]
+    delta_phi_chamber = float(2*math.pi/chambers)
+    half_strips_per_chamber = strips_per_chamber*2
+    delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
+    middle_strip_num = half_strips_per_chamber/2
+    phi_middle = float(offset + delta_phi_chamber*(chamber-1) + (middle_strip_num*delta_phi_half_strip))
+    while phi_middle < (-1*math.pi):
+        phi_middle += 2*math.pi
+    while phi_middle > math.pi:
+        phi_middle -= 2*math.pi
+    return phi_middle
     
 
 def calcPhiBendPrime(z1,z2,bend):
@@ -152,23 +172,23 @@ events = Events(['file:/scratch2/Leah/CMSSW_10_1_7/src/cscHits.root'])
 
 N=0
 #make histograms: hist_242_232 represents a track that goes from ME_2_3_2 to ME_2_4_2 (inverse propogation) -- to fit a
-a_242_232 = ROOT.TH2D("a_242_232","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
-a_242_222 = ROOT.TH2D("a_242_222","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
-a_242_212 = ROOT.TH2D("a_242_212","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.3,0.3)
-a_232_222 = ROOT.TH2D("a_232_222","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
-a_232_213 = ROOT.TH2D("a_232_213","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.2,0.2,100,-0.3,0.3)
-a_232_212 = ROOT.TH2D("a_232_212","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-0.3,0.3)
-a_222_213 = ROOT.TH2D("a_222_213","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.2,0.2)
-a_222_212 = ROOT.TH2D("a_222_212","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.4,0.4)
+#a_242_232 = ROOT.TH2D("a_242_232","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
+#a_242_222 = ROOT.TH2D("a_242_222","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
+#a_242_212 = ROOT.TH2D("a_242_212","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.3,0.3)
+#a_232_222 = ROOT.TH2D("a_232_222","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
+#a_232_213 = ROOT.TH2D("a_232_213","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.2,0.2,100,-0.3,0.3)
+#a_232_212 = ROOT.TH2D("a_232_212","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-0.3,0.3)
+a_222_213 = ROOT.TH2D("a_222_213","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-1,1,100,-1,1)
+#a_222_212 = ROOT.TH2D("a_222_212","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.4,0.4)
 
-a_142_132 = ROOT.TH2D("a_142_132","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-6.0,6.0)
-a_142_122 = ROOT.TH2D("a_142_122","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-6.3,6.3)
-a_142_112 = ROOT.TH2D("a_142_112","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-0.3,6.3)
-a_132_122 = ROOT.TH2D("a_132_122","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
-a_132_113 = ROOT.TH2D("a_132_113","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.2,0.2,100,-0.3,0.3)
-a_132_112 = ROOT.TH2D("a_132_112","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.3,6.3)
-a_122_113 = ROOT.TH2D("a_122_113","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-0.2,0.1)
-a_122_112 = ROOT.TH2D("a_122_112","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.2,6.3)
+#a_142_132 = ROOT.TH2D("a_142_132","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-6.0,6.0)
+#a_142_122 = ROOT.TH2D("a_142_122","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-6.3,6.3)
+#a_142_112 = ROOT.TH2D("a_142_112","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-0.3,6.3)
+#a_132_122 = ROOT.TH2D("a_132_122","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-6.3,6.3)
+#a_132_113 = ROOT.TH2D("a_132_113","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.2,0.2,100,-0.3,0.3)
+#a_132_112 = ROOT.TH2D("a_132_112","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.3,6.3)
+#a_122_113 = ROOT.TH2D("a_122_113","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.3,0.3,100,-0.2,0.1)
+#a_122_112 = ROOT.TH2D("a_122_112","($\Delta\Phi$-c$\Phi_{b}$) vs. Curvature; $\Kappa$; ($\Delta\Phi$-c$\Phi_{b}$)",100,-0.4,0.4,100,-0.2,6.3)
 
 
 

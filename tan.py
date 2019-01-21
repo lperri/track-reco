@@ -155,9 +155,9 @@ def getBend(s):
 #    ''' take in value of theta and returns tangent of that value in radians '''
 #    return math.tan(theta)
 
-def getTanThetaCalib(a,b,wire_num):
+def getTanThetaCalib(yint,slope,wire_num):
     ''' takes in a, b (parameters found in calibration), and wire number; returns value of tan(theta) '''
-    return a+b*wire_num 
+    return yint+slope*wire_num 
 
 ##def calcPhiBendPrime(z1,z2,bend):
 #    '''input (z1,z2,phi) & calculates the bending angle at location of second detector (after first/outwardmost)'''

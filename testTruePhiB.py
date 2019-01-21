@@ -133,7 +133,7 @@ def matchedDTStubs(muon,segments,geant):
 
 
 #dictionary that links the (encap,station,ring) to the corresponding [offset, chambers, strips_per_chamber] 
-ec_s_r_dict = {(1,1,3):[0,36,64],(1,1,2):[0,36,80],(1,2,2):[0,36,80],(1,3,2):[0,36,80],(1,4,2):[0,36,80],(2,1,3):[0,36,64],(2,1,2):[0,36,80],(2,2,2):[0,36,80],(2,3,2):[0,36,80],(2,4,2):[0,36,80]}
+ec_s_r_dict = {(1,1,3):[0.086,36,64],(1,1,2):[0.082,36,80],(1,2,2):[0.086,36,80],(1,3,2):[0.069,36,80],(1,4,2):[0.073,36,80],(2,1,3):[0.095,36,64],(2,1,2):[0.079,36,80],(2,2,2):[0.074,36,80],(2,3,2):[0.087,36,80],(2,4,2):[0.086,36,80]}
 
 detector_z_dict = {(1,1,3):-7.0,(1,1,2):-7.0,(1,2,2):-8.3,(1,3,2):-9.3,(1,4,2):-10.3,(2,1,3):7.0,(2,1,2):7.0,(2,2,2):8.3,(2,3,2):9.3,(2,4,2):10.3}
 
@@ -143,32 +143,63 @@ def getPhi(stub):
 	offset, chambers, strips_per_chamber = ec_s_r_dict[stub.first.endcap(), stub.first.station(),stub.first.ring()]
 	num_chamber = float(stub.first.chamber())
         num_half_strip = float(stub.second.getStrip())
-        delta_phi_chamber = float(360/chambers)
+        delta_phi_chamber = float((2*math.pi)/chambers)
         half_strips_per_chamber = strips_per_chamber*2
         delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
         phi = float(offset + (num_chamber -1)*(delta_phi_chamber) + (num_half_strip*delta_phi_half_strip))
-	return math.radians(phi) - math.pi
+	while phi<(-1*math.pi):
+	    phi += 2*math.pi
+	while phi>math.pi:
+	    phi -= 2*math.pi
+	return phi
 
 
-def getBend(s):
+def getPsi(s):
     #dict{id number : number halfstrips from middle}
-    dict = {2:-4,3:4,4:-3,5:3,6:-2,7:2,8:-1,9:1,10:0}
+    dict = {2:4,3:-4,4:3,5:-3,6:2,7:-2,8:1,9:-1,10:0}
     offset, chambers, strips_per_chamber = ec_s_r_dict[s.first.endcap(), s.first.station(),s.first.ring()]
-    delta_phi_chamber = float(360/chambers)
+    delta_phi_chamber = float(2*math.pi/chambers)
     half_strips_per_chamber = float(strips_per_chamber*2)
     delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
     pattern = s.second.getPattern()
-    #note this variable delta_phi_bend is defined wrt the center of the detector
-    delta_phi_bend = float(dict[pattern]*math.radians(delta_phi_half_strip))
+    #note this variable delta_phi_psi is defined wrt the center of the detector
+    delta_phi_psi = float(dict[pattern]*(delta_phi_half_strip))
     z = detector_z_dict[(s.first.endcap(),s.first.station(),s.first.ring())]
-    return math.atan((2*z/0.1) * math.tan(delta_phi_bend))
-
+    psi = math.atan((2*z/0.1) * math.tan(delta_phi_psi))
+    return psi
     
+def phiMiddleChamber(endcap,station,ring,chamber):
+#   ''' takes in (endcap,station,ring) as well as the chamber number and gets global phi value to the middle of that chamber '''
+    offset,chambers,strips_per_chamber = ec_s_r_dict[endcap,station,ring]
+    delta_phi_chamber = float(2*math.pi/chambers)
+    half_strips_per_chamber = strips_per_chamber*2
+    delta_phi_half_strip = float(delta_phi_chamber/half_strips_per_chamber)
+    middle_strip_num = half_strips_per_chamber/2
+    phi_middle = float(offset + delta_phi_chamber*(chamber-1) + (middle_strip_num*delta_phi_half_strip))    
+    while phi_middle < (-1*math.pi):
+	phi_middle += 2*math.pi
+    while phi_middle > math.pi:
+	phi_middle -= 2*math.pi
+    return phi_middle
 
+def getBend(s,phi_middle_chamber):
+    phiprime = getPhi(s) - phi_middle_chamber
+    bend = getPsi(s) - phiprime
+    while bend < (-1*math.pi):
+	bend += 2*math.pi
+    while bend > math.pi:
+	bend -= 2*math.pi
+    return bend
+    
 def calcPhiBendPrime(z1,z2,bend):
     '''input (z1,z2,phi) & calculates the bending angle at location of second detector (after first/outwardmost)'''
     c = abs((z1-z2)/z1)
-    return c*((((z1-z2)**2)/abs(z1)) + 2*(abs(z1-z2))) + bend*(1+(abs(z1-z2)/abs(z1))) 
+    phibp = c*((((z1-z2)**2)/abs(z1)) + 2*(abs(z1-z2))) + bend*(1+(abs(z1-z2)/abs(z1))) 
+    while phibp < (-1*math.pi):
+	phibp += 2*math.pi
+    while phibp > math.pi:
+	phibp -= 2*math.pi
+    return phibp
 
 events = Events(['file:/scratch2/Leah/CMSSW_10_1_7/src/cscHits.root'])
 
@@ -182,19 +213,25 @@ muon_number = []
 patterns = []
 pt_vals = []
 curvature = []
-bend_calc_vals = []
-bend_true_vals = []
-
+strip_num = []
+wire_num = []
+chamber_num = []
+phi_vals = []
+fixed_bend_l = []
+fixed_bend_m = []
 muon_number.append('muon number:')
 for x in range(1,51):
     muon_number.append(x)
 patterns.append('pattern:')
 pt_vals.append('pt:')
 curvature.append('k:')
-bend_calc_vals.append('bend Leah:')
-bend_true_vals.append('bend M:')
+strip_num.append('strip number:')
+wire_num.append('wire number:')
+chamber_num.append('chamber number:')
+phi_vals.append('phiL:')
+fixed_bend_l.append('fixed bend L:')
+fixed_bend_m.append('fixed bend M:')
 
- 
 for event in events:
     N=N+1
     #real muons
@@ -219,35 +256,39 @@ for event in events:
 			    #z2 = detector_z_dict[(ec2, station2, ring2)]
 		    	    #z1 = detector_z_dict[(ec1, station1, ring1)] 
 			    k = float(g.charge()/g.pt())
-			    #bend is the bending angle at the outer detector that I calculate with my function getBend(s) 
-			    #compare bend to the 'true bending angle'
-#			    bend_true = q.truePhiB
-	            	    #deltaphi = getPhi(q) - getPhi(s)
+			    #deltaphi = getPhi(q) - getPhi(s)
 		    	    #c = abs(z1-z2)/abs(z1)
 		    	    if ((ec2,station2,ring2),(ec1,station1,ring1)) == ((2,2,2),(2,1,3)):
-				bend = getPhi(s) - (math.pi/2) + getBend(s)
+				phi_middle_chamber = phiMiddleChamber(ec2,station2,ring2,s.first.chamber())
+	#			bend = getPhi(s) - (math.pi/2) + getPsi(s)
 			        #bendvsk_222_calc.Fill(k, bend)
-			        bend_true = getPhi(s) - (math.pi/2) + s.truePhiB
+	#		        bend_true = getPhi(s) - (math.pi/2) + s.truePhiB
 			        #bendvsk_222_true.Fill(k, bend_true)
 			        pattern = s.second.getPattern()
 				pt = g.pt()
-				if len(pt_vals)<51:
-				    bend_calc_vals.append(bend)
-				    bend_true_vals.append(bend_true)
+				fixed_bend = getBend(s, phi_middle_chamber)
+				fixed_bend_true = s.truePhiB	
+				while fixed_bend_true < (-1*math.pi):
+        			    fixed_bend_true += 2*math.pi
+    				while fixed_bend_true > math.pi:
+        			    fixed_bend_true -= 2*math.pi
+			        if len(pt_vals)<51:
 				    patterns.append(pattern)
 				    pt_vals.append(g.pt())
 				    curvature.append(k)
-				    				    
+				    strip_num.append(s.second.getStrip())  				    				    
+				    wire_num.append(s.second.getKeyWG())
+				    chamber_num.append(s.first.chamber())			
+				    phi_vals.append(getPhi(s))
+				    fixed_bend_l.append(fixed_bend)
+				    fixed_bend_m.append(fixed_bend_true)
+	
 with open('testing_fix.txt','w') as file:
     writer = csv.writer(file, delimiter='\t')
-    writer.writerows(zip(*[muon_number,pt_vals,patterns,curvature,bend_calc_vals,bend_true_vals]))
+    writer.writerows(zip(*[muon_number,pt_vals,patterns,curvature,strip_num,wire_num,chamber_num,phi_vals,fixed_bend_l,fixed_bend_m]))
 
 
 
-#file = open('testing_fix.txt','w')
-#for i in range(len(pt_vals)):
-#    file.write(('muon {}: pt={},k={},pattern={},bend(Leah)={},bend(M)={}').format(i,pt_vals[i],curvature[i],patterns[i],bend_calc_vals[i],bend_true_vals[i]))
-#file.close()
 
 #f=ROOT.TFile("plots.root","RECREATE")
 #f.cd()
