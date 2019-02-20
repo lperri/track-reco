@@ -6,7 +6,7 @@ import csv
 import numpy
 import argparse
 import sys
-
+from ROOT import gROOT
 
 ''' example of how to run this: python fitPhiK.py testing_phi_k_RMS.root rms > output_rms.txt '''
 
@@ -32,17 +32,19 @@ def getAll(d,basepath=''):
 
 f = ROOT.TFile(file_name)
 for name,obj in getAll(f):
-    print 
-    print
-    print
+    #print 
+    #print
+    #print
     print 'fitting parameters for ',name
     canvas = ROOT.TCanvas(name,name) 
-    fit_func = ROOT.TF1('fit_func','sqrt([0]*[0] + ([1]*[1])*(x*x))',obj.GetXaxis().GetXmin(),obj.GetXaxis().GetXmax())
-    fitted = obj.Fit('fit_func','S')
+    fit_func = ROOT.TF1('fit_func','sqrt(pow([0],2) + pow([1],2)*pow(x,2) + pow([2],2)*pow(x,4))',obj.GetXaxis().GetXmin(),obj.GetXaxis().GetXmax())
+    sliced = obj.FitSlicesY()
+    sliced_2 = gROOT.FindObject(str(name)+'_2')
     #fitted.Draw("ALP")
     #canvas.cd()
-    obj.Draw("AP")
-    fit_func.Draw("same")
+    sliced_2.Fit("fit_func")
+    sliced_2.Draw("AP")
+    #fit_func.Draw("same")
     canvas.Print(("{}.png").format(name))
     canvas.SaveAs(("{}.root").format(name))
 
