@@ -32,32 +32,6 @@ def getAll(d,basepath=''):
         else:
             yield basepath+kname, d.Get(kname)
 
-#IF YOU FEEL MOTIVATED TO GENERALIZE THIS CODE~~~~ <3
-
-#def fitHist(file_name, fit_func):
-#    obj_pfx = obj.ProfileX()
-#    xmin = obj_pfx.GetXaxis().GetXmin()
-#    xmax = obj_pfx.GetXaxis().GetXmax()
-#    fitted = obj_pfx.Fit('fit_func','S')	
-#
-#
-#
-#ROOT.gROOT.SetBatch(True)
-#f = ROOT.TFile(file_name)
-#fit_func_phik = 'x*[0]/(1+[1]*abs(x)) +[2]'
-#fit_func_rms = 'sqrt([0]**2 + ([1]**2)*(x**2))'
-#    for name, obj in getAll(f):
-#	if type_plot == 'phik':
-#	    fitHist(f,fit_func_phik)
-#            canvas = ROOT.TCanvas(name,name)
-#    	    canvas.Print(("{}.png").format(name))
-#	    output = open(("{}.txt").Format(name),"w")
-#	    output.write(name)
-#	    output.write(fitted)
-#	    output.close()
-
-
-
 #fit each histogram in the root file
 #ROOT.gROOT.SetBatch(True)
 f = ROOT.TFile(file_name)
