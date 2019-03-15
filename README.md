@@ -17,19 +17,19 @@ Collisions in the detector happen very, very quickly. Therefore, we need a way t
 
 Protons are composite particles and, as a reuslt, their collisions produce sprays of all kinds of particles that we can detect. In addition, heavy particles decay into lighter particles. One such light particle that CMS was built to detect is the [muon](). We have known of the existence of muons for almost a century, however, muons are important to the particle reconstruction process for technical reasons (in a nutshell, they provide us with a very clean signal, which aides in the discovery of more exotic particles). 
 
-Muons don't interact with the matter placed on the inner layers of the detector, so they are found in the endcaps of the detector.
+Muons don't interact with the matter placed on the inner layers of the detector, so they are found in the endcaps of the detector. (http://cms.web.cern.ch/news/muon-detectors)
 The muon reconstruction chain starts with the "local reconstruction". First, hits in DTs, CSCs and RPCs are reconstructed from digitized electronics signals. Hits within each DT and CSC chamber are then matched to form "segments" (track stubs). More information can be found [here](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMuonAnalysis).
 
 **Physics variables glossary:**
 - 'beam-line': proton beams travel along the z-axis of {CMS coordinate system}
 - 'interaction point': location of collision along beam-line
 - 'eta': stands for [pseudorapidity](https://en.wikipedia.org/wiki/Pseudorapidity), a quantity often used in place of 'theta,' the polar angle in a spherical coordinate system, within the field of experimental high energy physics; eta is an angular measure of how parallel a particle's trajectory is to the beam-line (beam-line is at eta=0, completely orthogonal to beam-line is eta=\inf)
-'phi' - the azimuthal angle in a cylindrical coordinate system.
+- 'phi': the azimuthal angle in a cylindrical coordinate system
 
 
 **CMS-specific glossary:**
-'event' - an event is [recorded data] from a collision
-'CSC' - Cathode Strip Chambers: trapezoidal chambers that make up the CMS Endcap Muon system
-'Geant' - shorthand for [Geant4](http://geant4.web.cern.ch/), which is simulation software developed by CERN for the purpose of simulating  
-'twinMux'
-'wire' - wires run azimuthally (in the phi direction) along panels in the CSCs and define a particle's radial coordinate
+- 'event' - an event is [recorded data] from a collision
+- 'CSC' - Cathode Strip Chambers: trapezoidal chambers that make up the CMS Endcap Muon system
+- 'Geant' - shorthand for [Geant4](http://geant4.web.cern.ch/), which is simulation software developed by CERN for the purpose of simulating  
+- 'twinMux'
+- 'wire' - wires run azimuthally (in the phi direction) along panels in the CSCs and define a particle's radial coordinate
