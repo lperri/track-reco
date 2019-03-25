@@ -15,9 +15,9 @@ Charged particles leave "tracks" in magnetic fields. CMS contains a 4T magnet, w
 **Basics of muon reconstruction in CMS**
 Collisions in the detector happen very, very quickly. Therefore, we need a way to slow things down in order to analyze what actually happened. "Reconstruction" refers to looking at the aftermath of an event, stored as digitized data, and draw a physical picture of what particles resulted from the proton-proton collision.
 
-Protons are composite particles and, as a reuslt, their collisions produce sprays of all kinds of particles that we can detect. In addition, heavy particles decay into lighter particles. One such light particle that CMS was built to detect is the [muon](). We have known of the existence of muons for almost a century, however, muons are important to the particle reconstruction process for technical reasons (in a nutshell, they provide us with a very clean signal, which aides in the discovery of more exotic particles). 
+Protons are composite particles and, as a reuslt, their collisions produce sprays of all kinds of particles that we can detect. In addition, heavy particles decay into lighter particles. One such light particle that CMS was built to detect is the [muon](https://en.wikipedia.org/wiki/Muon). We have known of the existence of muons for almost a century, however, muons are important to the particle reconstruction process for technical reasons (in a nutshell, they provide us with a very clean signal, which aides in the discovery of more exotic particles). 
 
-Muons don't interact with the matter placed on the inner layers of the detector, so they are found in the endcaps of the detector. (http://cms.web.cern.ch/news/muon-detectors)
+Muons don't interact with the matter placed on the inner layers of the detector, so they are found in the endcaps of the [detector](http://cms.web.cern.ch/news/muon-detectors).
 The muon reconstruction chain starts with the "local reconstruction". First, hits in DTs, CSCs and RPCs are reconstructed from digitized electronics signals. Hits within each DT and CSC chamber are then matched to form "segments" (track stubs). More information can be found [here](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMuonAnalysis).
 
 **Physics variables glossary:**
@@ -26,11 +26,11 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 - 'eta': stands for [pseudorapidity](https://en.wikipedia.org/wiki/Pseudorapidity), a quantity often used in place of 'theta,' the polar angle in a spherical coordinate system, within the field of experimental high energy physics; eta is an angular measure of how parallel a particle's trajectory is to the beam-line (beam-line is at eta=0, completely orthogonal to beam-line is eta=\inf)
 - 'phi': the azimuthal angle in a cylindrical coordinate system
 
-
 **CMS-specific glossary:**
-- 'event' - an event is [recorded data] from a collision
-- 'CSC' - Cathode Strip Chambers: trapezoidal chambers that make up the CMS Endcap Muon system
-- 'Geant' - shorthand for [Geant4](http://geant4.web.cern.ch/), which is simulation software developed by CERN for the purpose of simulating  
-- a 'hit' - colloquial term for a charge buildup on one of the wires, indicating that a particle has crossed that location on its trajectory
-- 'wire' - wires run azimuthally (in the phi direction) along panels in the CSCs and define a hit's radial coordinate
-- 'strip' - strips run radially (in the r direction) along panels in the CSCs and define a hit's angular coordinate
+- 'event': an event is [recorded data] from a collision
+- 'CSC': Cathode Strip Chambers: trapezoidal chambers that make up the CMS Endcap Muon system
+- 'Geant': shorthand for [Geant4](http://geant4.web.cern.ch/), which is simulation software developed by CERN for the purpose of simulating; any variable or function containting the name 'gen' refers to simulated data generated with this software
+- a 'hit': colloquial term for a charge buildup on one of the wires, indicating that a particle has crossed that location on its trajectory
+- 'wire': wires run azimuthally (in the phi direction) along panels in the CSCs and define a hit's radial coordinate
+- 'strip': strips run radially (in the r direction) along panels in the CSCs and define a hit's angular coordinate
+- 'sector': 60 degree portions of the muon system 
