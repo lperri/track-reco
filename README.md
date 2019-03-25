@@ -34,3 +34,10 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 - 'wire': wires run azimuthally (in the phi direction) along panels in the CSCs and define a hit's radial coordinate
 - 'strip': strips run radially (in the r direction) along panels in the CSCs and define a hit's angular coordinate
 - 'sector': 60 degree portions of the muon system 
+
+**Sub-Projects in this Repository**
+
+Guide to using this software:
+- setting up the [Working Environment](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookSetComputerNode#Create_a_work_area_and_build_the)
+- bash_scripts: a release
+- calibrate_propagate_wire: software inside this directory can be run with 
