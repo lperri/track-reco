@@ -35,9 +35,9 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 - 'strip': strips run radially (in the r direction) along panels in the CSCs and define a hit's angular coordinate
 - 'sector': 60 degree portions of the muon system 
 
-**Sub-Projects in this Repository**
-
-Guide to using this software:
-- building the [Work Area](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookSetComputerNode#Create_a_work_area_and_build_the)
+**About This Repository**
+Guide to using the software:
+First build the [Work Area](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookSetComputerNode#Create_a_work_area_and_build_the).
+Here is a brief description of the functionality of each directory and its contents:
 - bash_scripts: running setup_env.sh in working directory will set up CMS environment
 <!---Calibration, Propagation, Algorithm, Efficiency // Digital & Not Digital-->
