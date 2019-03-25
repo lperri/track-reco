@@ -38,6 +38,6 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 **Sub-Projects in this Repository**
 
 Guide to using this software:
-- setting up the [Working Environment](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookSetComputerNode#Create_a_work_area_and_build_the)
-- bash_scripts: a release
-- calibrate_propagate_wire: software inside this directory can be run with 
+- building the [Work Area](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookSetComputerNode#Create_a_work_area_and_build_the)
+- bash_scripts: running setup_env.sh in working directory will set up CMS environment
+<!---Calibration, Propagation, Algorithm, Efficiency // Digital & Not Digital-->
