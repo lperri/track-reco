@@ -1,7 +1,7 @@
 # track-reco
 Project related to CMS Particle Track Reconstruction
 
-#README IS CURRENTLY IN PROGRESS
+# README IS CURRENTLY UNDER CONSTRUCTION
 
 **Experiments the Large Hadron Collider (LHC) at CERN:**
 The particle collider consists of various experiments, including the Compact Muon Solenoid (CMS), A Large Ion Collider Experiment (ALICE), A Toroidal LHC Apparatus (ATLAS). For a visual representation of the layout of experiments with respect to the LHC, click [here](http://cds.cern.ch/images/OPEN-PHO-ACCEL-2013-056-1)).
@@ -31,5 +31,6 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 - 'event' - an event is [recorded data] from a collision
 - 'CSC' - Cathode Strip Chambers: trapezoidal chambers that make up the CMS Endcap Muon system
 - 'Geant' - shorthand for [Geant4](http://geant4.web.cern.ch/), which is simulation software developed by CERN for the purpose of simulating  
-- 'twinMux'
-- 'wire' - wires run azimuthally (in the phi direction) along panels in the CSCs and define a particle's radial coordinate
+- a 'hit' - colloquial term for a charge buildup on one of the wires, indicating that a particle has crossed that location on its trajectory
+- 'wire' - wires run azimuthally (in the phi direction) along panels in the CSCs and define a hit's radial coordinate
+- 'strip' - strips run radially (in the r direction) along panels in the CSCs and define a hit's angular coordinate
