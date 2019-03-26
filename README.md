@@ -25,6 +25,8 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 - 'interaction point': location of collision along beam-line
 - 'eta': stands for [pseudorapidity](https://en.wikipedia.org/wiki/Pseudorapidity), a quantity often used in place of 'theta,' the polar angle in a spherical coordinate system, within the field of experimental high energy physics; eta is an angular measure of how parallel a particle's trajectory is to the beam-line (beam-line is at eta=0, completely orthogonal to beam-line is eta=\inf)
 - 'phi': the azimuthal angle in a cylindrical coordinate system
+- 'k': in particle physics, lowercase k or the greek letter kappa refers to a quantity called "curvature" which is a measure of how much something bends
+- 'pt': in particle physics, refers to transverse momentum, a 
 
 **CMS-specific glossary:**
 - 'event': an event is [recorded data] from a collision
