@@ -7,10 +7,10 @@ for event in events:
     
     if counter%10000 == 0:
         print 'analyzing event {}'.format(counter)
-    if counter == 50000:
+    if counter == 100000:
         break;
     counter += 1
-    gen_muons = fetchGEN(event,1.2,2.5)
+    gen_muons = fetchGEN(events,0.8,2.5)
     emtf_hits = fetchNewHits(events)
 
     for gen_muon in gen_muons:
@@ -29,7 +29,11 @@ for event in events:
             
             # note that gen_phi as defined below first gets put into global coordinates WRT the center of CMS then gets put in range (0,2PI) in preparation for conversion to digital coordinates
             gen_phi_digi = genPhiToDigi(gen_muon,hit)
-            phi_difference = hit.Phi_fp() - gen_phi_digi
-            hist_phi_calibration[(ec,station,ring)].Fill(k_digi,phi_difference)
-            hist_theta_calibration[(ec,station,ring)].Fill(gen_theta,hit.Theta_fp())
+            #phi_difference = hit.Phi_fp() - gen_phi_digi
+            #hist_phi_calibration[(ec,station,ring)].Fill(k_digi,phi_difference)
 
+#            hist_theta_calibration[(ec,station,ring)].Fill(gen_theta,hit.Theta_fp())
+            hist_theta_calibration[(ec,station)].Fill(gen_theta,hit.Theta_fp())
+            
+            
+            

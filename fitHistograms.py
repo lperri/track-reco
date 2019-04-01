@@ -4,8 +4,8 @@ from fillHistograms import *
 # fit all histograms and store parameters in dictionary phi_offset_slope_loss, theta_offset_slope
 # save root file of all histograms
 
-root_file_name_phi = 'phi_calibration'
-root_file_name_theta = 'theta_calibration'
+root_file_name_phi = 'phi_calibration_401'
+root_file_name_theta = 'theta_calibration_401_byStation'
 fit_function_phi = 'x*[1]/(1+[2]*abs(x)) + [0]'
 fit_function_theta = '[0] + [1]*x'
 
@@ -51,16 +51,16 @@ def generateRootName(combo):
     return name
 
 
-f = ROOT.TFile(root_file_name_phi+'.root','RECREATE')
-f.cd()
-for combo in hist_phi_calibration:
-    # construct histogram names based on (ec,station,ring)
-    name = generateRootName(combo)
-    #draw abd write 2D histograms
-    drawn_obj = drawHistogram(root_file_name_phi,hist_phi_calibration,combo,name)
-    # fit sliced 2D histograms
-    fitSliced2DHistogram(root_file_name_phi,drawn_obj,phi_offset_slope_loss,combo,name,fit_function_phi)
-f.Close()
+#f = ROOT.TFile(root_file_name_phi+'.root','RECREATE')
+#f.cd()
+#for combo in hist_phi_calibration:
+#    # construct histogram names based on (ec,station,ring)
+#    name = generateRootName(combo)
+#    #draw abd write 2D histograms
+#    drawn_obj = drawHistogram(root_file_name_phi,hist_phi_calibration,combo,name)
+#    # fit sliced 2D histograms
+#    fitSliced2DHistogram(root_file_name_phi,drawn_obj,phi_offset_slope_loss,combo,name,fit_function_phi)
+#f.Close()
 
 
 g = ROOT.TFile(root_file_name_theta+'.root','RECREATE')

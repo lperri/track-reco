@@ -21,5 +21,6 @@ def genThetaToDigi(angle_value):
 def genPhiToDigi(gen_muon,hit):
     """ takes gen phi and puts into global digital coordinates """
     # the offset of pi/12 appears because the first sector starts at 15 degrees or pi/12 rad
-    return int((angleInRadianRange(gen_muon.phi(),(0,2*math.pi)) - hit.Sector()*math.pi/3.0 - math.pi/12)*4920*3/math.pi)
-
+    sector_size = math.pi/3
+    #return int((angleInRadianRange(gen_muon.phi(),(0,2*math.pi)) - (hit.Sector()-1)*math.pi/3.0 - math.pi/12)*4920*3/math.pi)
+    return int((angleInRadianRange(gen_muon.phi(),(0,2*math.pi)) - (hit.Sector()-1)*sector_size - math.pi/12)*4920/sector_size)
