@@ -39,15 +39,15 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 Guide to using the software:
 First build the [Work Area](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookSetComputerNode#Create_a_work_area_and_build_the).
 Here is a brief description of the functionality of each directory and its contents:
-- bash_scripts: running setup_env.sh in working directory will set up CMS environment
-- non_digital_units: digital units here refers to whether or not the quantities being manipulated are raw detector output (bits) or non-integer quantities, for example, an angle measured in radians. This project was originally done in non-digital units (i.e. not with raw detector data), but later was put into digital units so that it could accomodate raw data.
-- old_scratch_not_used: self explanatory... just keeping it for my records.
--angleManipulations.py: makes sure that angles are in the correct range (and if they are not, it moves them to the correct range); also converts angles measured in radians to raw detector ("digital") units
-- associatedStubsAlgorithm.py: a muon object (representing a real muon) in this project is defined by a few attributes (angles of trajectory and curvature) as well as the number of associated stubs. If the object has more than 2 associated stubs (which are determined to be associated based on "distance" from each other in "phi-space"), then it is considered to be a real muon.
-- checkRange_thetaFP.py: a script that outputs a 1d histogram of all theta_fp values, purely for debugging purposes; thetaFP stands for "fixed point theta", theta being the polar angle in a spherical coordinate system and "fixed point" referring to it being measured in bits -- raw detector data.
-- makeHistograms.py: uses PyROOT to set up 
-- fillHistograms.py: fills histograms for the purpose of calibrating angles phi & theta; takes in all information from retrieveDataAsEvents.py, makeHistograms.py and angleManipulations.py. 
-- fitHistograms.py: if you want to fit the histgorams filled by fillHistograms.py, this script fits the 2D calibration histograms (projected into 1D profiles) to the proper functions (based on physics concepts)
-- generate3Dhistograms.py: generates 3D histograms (x-axis=k,y-axis=difference in phi,z-axis=thetaFP); the point of these histograms is to check if our phi calibration has any dependence on theta, i.e. if the difference in phi depends on where we are in "theta-space"; it also has funcitonality to write projections of the 3D histogram to the root file.
-- retrieveDataAsEvents.py: specifies which tag you want to use (i.e. which dataset) and then cleans it prior to use in analysis.
+- **bash_scripts**: running setup_env.sh in working directory will set up CMS environment
+- **non_digital_units**: digital units here refers to whether or not the quantities being manipulated are raw detector output (bits) or non-integer quantities, for example, an angle measured in radians. This project was originally done in non-digital units (i.e. not with raw detector data), but later was put into digital units so that it could accomodate raw data.
+- **old_scratch_not_used**: self explanatory... just keeping it for my records.
+- **angleManipulations.py**: makes sure that angles are in the correct range (and if they are not, it moves them to the correct range); also converts angles measured in radians to raw detector ("digital") units
+- **associatedStubsAlgorithm.py**: a muon object (representing a real muon) in this project is defined by a few attributes (angles of trajectory and curvature) as well as the number of associated stubs. If the object has more than 2 associated stubs (which are determined to be associated based on "distance" from each other in "phi-space"), then it is considered to be a real muon.
+- **checkRange_thetaFP.py**: a script that outputs a 1d histogram of all theta_fp values, purely for debugging purposes; thetaFP stands for "fixed point theta", theta being the polar angle in a spherical coordinate system and "fixed point" referring to it being measured in bits -- raw detector data.
+- **makeHistograms.py**: uses PyROOT to set up 
+- **fillHistograms.py**: fills histograms for the purpose of calibrating angles phi & theta; takes in all information from retrieveDataAsEvents.py, makeHistograms.py and angleManipulations.py. 
+- **fitHistograms.py**: if you want to fit the histgorams filled by fillHistograms.py, this script fits the 2D calibration histograms (projected into 1D profiles) to the proper functions (based on physics concepts)
+- **generate3Dhistograms.py**: generates 3D histograms (x-axis=k,y-axis=difference in phi,z-axis=thetaFP); the point of these histograms is to check if our phi calibration has any dependence on theta, i.e. if the difference in phi depends on where we are in "theta-space"; it also has funcitonality to write projections of the 3D histogram to the root file.
+- **retrieveDataAsEvents.py**: specifies which tag you want to use (i.e. which dataset) and then cleans it prior to use in analysis.
 <!---Calibration, Propagation, Algorithm, Efficiency // Digital & Not Digital-->
