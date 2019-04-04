@@ -21,7 +21,7 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 **Physics variables glossary:**
 - 'beam-line': proton beams travel along the z-axis of {CMS coordinate system}
 - 'interaction point': location of collision along beam-line
-- 'eta': stands for [pseudorapidity](https://en.wikipedia.org/wiki/Pseudorapidity), a quantity often used in place of 'theta,' the polar angle in a spherical coordinate system, within the field of experimental high energy physics; eta is an angular measure of how parallel a particle's trajectory is to the beam-line (beam-line is at eta=0, completely orthogonal to beam-line is eta=\inf)
+- 'eta': stands for [pseudorapidity](https://en.wikipedia.org/wiki/Pseudorapidity), a quantity often used in place of 'theta,' the polar angle in a spherical coordinate system, within the field of experimental high energy physics; eta is an angular measure of how parallel a particle's trajectory is to the beam-line (beam-line is at eta=0, completely orthogonal to beam-line is eta=infinity)
 - 'phi': the azimuthal angle in a cylindrical coordinate system
 - 'k': in particle physics, lowercase k or the greek letter kappa refers to a quantity called "curvature" which is a measure of how much something bends
 - 'pt': in particle physics, refers to transverse momentum, a 
