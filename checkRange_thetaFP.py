@@ -7,7 +7,7 @@ histo = ROOT.TH1D('fp','fp',128,0,127)
 ec_s_r = [(1,1,2),(1,1,3),(1,2,1),(1,2,2),(1,3,1),(1,3,2),(1,4,2),(-1,1,3),(-1,1,2),(-1,2,1),(-1,2,2),(-1,3,1),(-1,3,2),(-1,4,2),(1,4,1),(-1,4,1)]
 
 for event in events:
-    gen_muons = fetchGEN(event,0.9,2.5)
+    gen_muons = fetchGEN(event,0.8,2.5)
     emtf_hits = fetchNewHits(events)
     for gen_muon in gen_muons:
         matched_stubs = matchedStubs(gen_muon, emtf_hits)
@@ -17,7 +17,7 @@ for event in events:
                 break;
             histo.Fill(hit.Theta_fp())
 
-f = ROOT.TFile('fp_hist.root','RECREATE')
+f = ROOT.TFile('checkRangeThetaFP_newHits.root','RECREATE')
 f.cd()
 histo.Write()
 f.Close()

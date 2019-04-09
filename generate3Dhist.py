@@ -26,13 +26,19 @@ for combo in ec_s_r:
         ec_s_r__string = 'hist_ec'+str(combo[0])+'_st'+str(combo[1])+'_r'+str(combo[2])
     hists_separate_chambers[(combo)] = ROOT.TH3D(ec_s_r__string,ec_s_r__string,100,-4000,4000,100,-5000,5000,128,0,127)
 
+counter = -1
 for event in events:
-    gen_muons = fetchGEN(event,0.8,2.5)
+    gen_muons = fetchGEN(events,0.8,2.5)
+    if counter%10000==0:
+        print 'analyzing event ',counter
+    counter += 1
     emtf_hits = fetchNewHits(events)
     for gen_muon in gen_muons:
         matched_stubs = matchedStubs(gen_muon,emtf_hits)
         k = gen_muon.charge()/gen_muon.pt()
-        gen_theta = angleInRadianRange(etaToTheta(gen_muon.eta()),(0,math.pi))
+        gen_theta = (etaToTheta(gen_muon.eta()))
+
+        #gen_theta = angleInRadianRange(etaToTheta(gen_muon.eta()),(0,math.pi))
         k_digi = int(8192*(k/math.cos(gen_theta)))
         for hit in matched_stubs:
             ec,station,ring = hit.Endcap(),hit.Station(),hit.Ring()
@@ -40,26 +46,33 @@ for event in events:
                 break;
             phi_diff = hit.Phi_fp() - genPhiToDigi(gen_muon,hit)
             theta_fp = hit.Theta_fp()
-            hists[(ec,station)].Fill(k_digi,phi_diff,theta_fp)
-            hists_separate_chambers[(ec,station,ring)].Fill(k_digi,phi_diff,theta_fp)
+            if counter == 17:
+                print 'at event 17'
+                print 'theta fp',hit.Theta_fp()
+                try:
+                    hists[(ec,station)].Fill(k_digi,phi_diff,theta_fp)
+                except:
+                    print 'did not work'
+                hists_separate_chambers[(ec,station,ring)].Fill(k_digi,phi_diff,theta_fp)
 
 
-#f = ROOT.TFile('hists_3d.root','RECREATE')
-#f.cd()
-#for combo in ec_s:
-#    hists[combo].Write()
+
+f = ROOT.TFile('hists_3d_402.root','RECREATE')
+f.cd()
+for combo in ec_s:
+    hists[combo].Write()
     #proj_yx = hists[combo].Project3D('yx')
     #proj_yx.Write('proj_k_phi_ME'+str(combo))
-    #proj_z = hists[combo].ProjectionZ()
-    #proj_z.Write('proj_z_ME'+str(combo))
-#f.Close()
+    proj_z = hists[combo].ProjectionZ(str(combo)+'_ProjectionZ')
+    proj_z.Write('proj_z_ME'+str(combo))
+f.Close()
 
-g = ROOT.TFile('hists_3d_separate_chambers.root','RECREATE')
+g = ROOT.TFile('hists_3d_separate_chambers_402.root','RECREATE')
 g.cd()
 for combo in ec_s_r:
     hists_separate_chambers[combo].Write()
     #proj_yx = hists[combo].Project3D('yx')
     #proj_yx.Write('proj_k_phi_ME'+str(combo))
-    #proj_z = hists[combo].ProjectionZ()
-    #proj_z.Write('proj_z_ME'+str(combo))
+    proj_z = hists_separate_chambers[combo].ProjectionZ(str(combo)+'_ProjectionZ')
+    proj_z.Write('proj_z_ME'+str(combo))
 g.Close()

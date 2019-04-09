@@ -4,8 +4,8 @@ from fillHistograms import *
 # fit all histograms and store parameters in dictionary phi_offset_slope_loss, theta_offset_slope
 # save root file of all histograms
 
-root_file_name_phi = 'phi_calibration_401'
-root_file_name_theta = 'theta_calibration_401_byStation'
+root_file_name_phi = 'phi_calibration_403'
+root_file_name_theta = 'theta_calibration_402_byStation'
 fit_function_phi = 'x*[1]/(1+[2]*abs(x)) + [0]'
 fit_function_theta = '[0] + [1]*x'
 
@@ -13,12 +13,12 @@ fit_function_theta = '[0] + [1]*x'
 def drawHistogram(root_file_name,dictionary,combo,name):
     """ inputs: dictionary (which dictionary containing the histogram objects do you want to use), combo ((ec,station,ring)) i.e. the key of the dictionary letting it know which histogram you want, and name (what you want to call histogram); will draw histogram on canvas and write object to root file """
     obj = dictionary[combo]
-    c1 = ROOT.TCanvas(root_file_name+'_'+name,root_file_name+'_'+name)
-    c1.SetGrid()
-    c1.cd()
+#    c1 = ROOT.TCanvas(root_file_name+'_'+name,root_file_name+'_'+name)
+#    c1.SetGrid()
+#    c1.cd()
     obj.Write(root_file_name+name)
-    obj.Draw('AP')
-    c1.Update()
+#    obj.Draw('AP')
+#    c1.Update()
     return obj
     
 def fitSliced2DHistogram(root_file_name,obj,params_dictionary,combo,name,function):
@@ -42,7 +42,7 @@ def fitSliced2DHistogram(root_file_name,obj,params_dictionary,combo,name,functio
     c2.Update()
     
     
-def generateRootName(combo):
+def generateRootName__ec_s_r(combo):
     """ input: combo (ec,station,ring), generates name """
     if combo[0] == -1:
         name = 'n1'+str(combo[1])+str(combo[2])
@@ -50,24 +50,45 @@ def generateRootName(combo):
         name = str(combo[0])+str(combo[1])+str(combo[2])
     return name
 
+def generateRootName__ec_s(combo):
+    """ input: combo (ec,station,ring), generates name """
+    if combo[0] == -1:
+        name = 'n1'+str(combo[1])
+    else:
+        name = str(combo[0])+str(combo[1])
+    return name
 
-#f = ROOT.TFile(root_file_name_phi+'.root','RECREATE')
+
+f = ROOT.TFile(root_file_name_phi+'.root','RECREATE')
+f.cd()
+for combo in hist_phi_calibration:
+    # construct histogram names based on (ec,station,ring)
+    name = generateRootName__ec_s_r(combo)
+    #draw abd write 2D histograms
+    drawn_obj = drawHistogram(root_file_name_phi,hist_phi_calibration,combo,name)
+    # fit sliced 2D histograms
+    fitSliced2DHistogram(root_file_name_phi,drawn_obj,phi_offset_slope_loss,combo,name,fit_function_phi)
+f.Close()
+
+#f = ROOT.TFile(root_file_name_theta+'_3d'+'.root','RECREATE')
 #f.cd()
-#for combo in hist_phi_calibration:
-#    # construct histogram names based on (ec,station,ring)
-#    name = generateRootName(combo)
-#    #draw abd write 2D histograms
-#    drawn_obj = drawHistogram(root_file_name_phi,hist_phi_calibration,combo,name)
-#    # fit sliced 2D histograms
-#    fitSliced2DHistogram(root_file_name_phi,drawn_obj,phi_offset_slope_loss,combo,name,fit_function_phi)
+## do same for theta
+#for combo in hist_3d:
+#    name = generateRootName__ec_s(combo)
+#    drawn_obj = drawHistogram(root_file_name_theta+'_3d',hist_3d,combo,name)
+#    #fitSliced2DHistogram(root_file_name_theta,drawn_obj,theta_offset_slope,combo,name,fit_function_theta)
 #f.Close()
-
-
-g = ROOT.TFile(root_file_name_theta+'.root','RECREATE')
-g.cd()
-# do same for theta
-for combo in hist_theta_calibration:
-    name = generateRootName(combo)
-    drawn_obj = drawHistogram(root_file_name_theta,hist_theta_calibration,combo,name)
-    fitSliced2DHistogram(root_file_name_theta,drawn_obj,theta_offset_slope,combo,name,fit_function_theta)
-g.Close()
+#g = ROOT.TFile(root_file_name_theta+'.root','RECREATE')
+#g.cd()
+## do same for theta
+#for combo in hist_theta_calibration:
+#    name = generateRootName__ec_s(combo)
+#    drawn_obj = drawHistogram(root_file_name_theta,hist_theta_calibration,combo,name)
+#    #fitSliced2DHistogram(root_file_name_theta,drawn_obj,theta_offset_slope,combo,name,fit_function_theta)
+#g.Close()
+#h = ROOT.TFile(root_file_name_theta+'_1d'+'.root','RECREATE')
+#h.cd()
+#for combo in hist_1d:
+#    name = generateRootName__ec_s(combo)
+#    drawn_obj = drawHistogram(root_file_name_theta+'_1d',hist_1d,combo,name)
+#h.Close()
