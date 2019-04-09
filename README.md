@@ -28,9 +28,12 @@ The muon reconstruction chain starts with the "local reconstruction". First, hit
 
 **CMS-specific glossary:**
 - 'event': an event is [recorded data] from a collision
+- 'the barrel': the main portion of the detector (does not include endcaps), containing DTs and RPCs (see definitions below)
+- 'DT': Drift Tube: structures that are responsible for measuring muon's position when it is in the 'barrel'
+- 'RPC': Resistive Plate Chamber: structures responsible for giving quick measurements of muon momentum  
 - 'CSC': Cathode Strip Chambers: trapezoidal chambers that make up the CMS Endcap Muon system
 - 'Geant': shorthand for [Geant4](http://geant4.web.cern.ch/), which is simulation software developed by CERN for the purpose of simulating; any variable or function containting the name 'gen' refers to simulated data generated with this software
-- a 'hit'/'stub': colloquial term for a charge buildup on one of the wires, indicating that a particle has crossed that location on its trajectory
+- a 'hit'/'stub': trigger primitives, software objects that indicate charge has built up on one of the wires, indicating that a particle has crossed that location on its trajectory
 - 'wire': wires run azimuthally (in the phi direction) along panels in the CSCs and define a hit's radial coordinate
 - 'strip': strips run radially (in the r direction) along panels in the CSCs and define a hit's angular coordinate
 - 'sector': 60 degree portions of the muon system 
@@ -49,5 +52,5 @@ Here is a brief description of the functionality of each directory and its conte
 - **fillHistograms.py**: fills histograms for the purpose of calibrating angles phi & theta; takes in all information from retrieveDataAsEvents.py, makeHistograms.py and angleManipulations.py. 
 - **fitHistograms.py**: if you want to fit the histgorams filled by fillHistograms.py, this script fits the 2D calibration histograms (projected into 1D profiles) to the proper functions (based on physics concepts)
 - **generate3Dhistograms.py**: generates 3D histograms (x-axis=k,y-axis=difference in phi,z-axis=thetaFP); the point of these histograms is to check if our phi calibration has any dependence on theta, i.e. if the difference in phi depends on where we are in "theta-space"; it also has funcitonality to write projections of the 3D histogram to the root file.
-- **retrieveDataAsEvents.py**: specifies which tag you want to use (i.e. which dataset) and then cleans it prior to use in analysis.
+- **retrieveDataAsEvents.py**: specifies which tag you want to use and then cleans that data prior to use in analysis.
 <!---Calibration, Propagation, Algorithm, Efficiency // Digital & Not Digital-->
